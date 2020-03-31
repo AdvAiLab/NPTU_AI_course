@@ -3,8 +3,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.ion()
-
 n_cluster_points = 100
 cluster_dim = 2
 cluster_shape = (n_cluster_points, cluster_dim)
@@ -31,7 +29,6 @@ cluster_colors = ["red", "blue", "green", "purple"]
 distant_arr = np.zeros((points_num, means_K))
 iteration = 0
 while True:
-    plt.clf()
     cluster_points = [[] for _ in cluster_colors]
     for i, (cp, color) in enumerate(zip(centroids, cluster_colors)):
         plt.scatter(*cp, color=color, marker='+', s=200)
@@ -53,11 +50,9 @@ while True:
     plt.title("iteration %s, Centroids distant=%s" % (iteration, centroids_distant))
 
     plt.draw()
-
     plt.pause(0.2)
+    plt.clf()
     iteration += 1
 
     if centroids_distant < 0.01:
         break
-# plt.show()
-plt.pause(9999)

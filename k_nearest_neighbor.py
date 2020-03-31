@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.ion()
 
 cluster_num = 100
 cluster_dim = 2
