@@ -3,15 +3,15 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-cluster_num = 500
-cluster_dim = 2
-cluster_shape = (cluster_num, cluster_dim)
+n_cluster_points = 500
+point_dim = 2
+cluster_shape = (n_cluster_points, point_dim)
 
 # Randomly generate clusters using Normal Distribution (randn)
 rand_points = 0 + 2 * np.random.randn(*cluster_shape)
 
 # We only need random point rather than cluster so using uniform distribution.
-centroid = 10 * np.random.rand(cluster_dim) - 5
+centroid = 10 * np.random.rand(point_dim) - 5
 
 
 def neighborhood_points(xs, x_centroid, dist=3):

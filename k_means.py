@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 n_cluster_points = 100
-cluster_dim = 2
-cluster_shape = (n_cluster_points, cluster_dim)
+point_dim = 2
+cluster_shape = (n_cluster_points, point_dim)
 means_K = 4
 
 # Randomly generate clusters using Normal Distribution (randn)

@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-cluster_num = 20
-cluster_dim = 2
-cluster_shape = (cluster_num, cluster_dim)
+n_cluster_points = 20
+point_dim = 2
+cluster_shape = (n_cluster_points, point_dim)
 cluster_colors = ["red", "blue", "green"]
 color_per_point = []
 
@@ -15,7 +15,7 @@ test_point = np.array([2, 5])
 rand_points1 = 0 + 2 * np.random.randn(*cluster_shape)
 rand_points2 = 7 + 3 * np.random.randn(*cluster_shape)
 rand_points3 = [3, 0] + 2 * np.random.randn(*cluster_shape)
-points_num = cluster_num * 3
+points_num = n_cluster_points * 3
 points_list = [rand_points1, rand_points2, rand_points3]
 distant_arr = np.zeros(points_num)
 
@@ -23,7 +23,7 @@ for i, (cluster, color) in enumerate(zip(points_list, cluster_colors)):
     # Plot all points
     plt.scatter(cluster[:, 0], cluster[:, 1], color=color, s=50, alpha=0.1)
     # Create color for each point
-    color_per_point.append(np.full(cluster_num, i, dtype=int))
+    color_per_point.append(np.full(n_cluster_points, i, dtype=int))
 color_per_point = np.concatenate(color_per_point)
 all_points = np.concatenate(points_list)
 
