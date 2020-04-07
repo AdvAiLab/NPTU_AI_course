@@ -43,7 +43,7 @@ while True:
     for i, rp in enumerate(all_points):
         centroid = centroid_arr[i]
 
-        eligible_points = neighborhood_points(all_points, centroid, dist=4)
+        eligible_points = neighborhood_points(all_points, centroid, dist=6)
         new_centroid = np.mean(eligible_points, axis=0)
 
         # Record distance between new and old centroid in oder to determine convergence.
