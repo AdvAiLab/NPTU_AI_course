@@ -58,21 +58,23 @@ while True:
     plt.draw()
     plt.clf()
     # We assume converged when centroid no more updated that same as k-means.
-    if mean_distance < 0.1:
+    if mean_distance < 0.001:
         break
     iteration += 1
 
-centroid_arr = np.sort(np.mean(centroid_arr, axis=1))
-centroid_diff = np.diff(centroid_arr)
-cluster_idx = np.argwhere(centroid_diff > 5)
-splited_cluster = np.split(all_points, cluster_idx.astype(int).ravel())
-splited_centroid = np.split(centroid_arr, cluster_idx)
-
-for cluster, centroids, color in zip(splited_cluster, splited_centroid, cluster_colors):
-    new_centroid = np.mean(centroids)
-    plt.scatter(*new_centroid, color=color, marker="*", s=200, alpha=1.0)
-    plt.scatter(cluster[:, 0], cluster[:, 1], color=color, s=50, alpha=0.1)
-plt.title("Clustering result")
-plt.show()
+ind = np.lexsort((centroid_arr[:, 1], centroid_arr[:, 0]))
+sorted_centroids = centroid_arr[ind]
+sorted_all = all_points[ind]
+centroid_diff = np.linalg.norm(np.diff(sorted_centroids, axis=0), axis=1)
+cluster_idx = np.argwhere(centroid_diff > 1)
+splited_cluster = np.split(sorted_all, cluster_idx.ravel())
+splited_centroid = np.split(centroid_arr, cluster_idx.ravel())
+for i, (cluster, centroids) in enumerate(zip(splited_cluster, splited_centroid)):
+    new_centroid = np.mean(centroids, axis=0)
+    plt.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
+    plt.scatter(cluster[:, 0], cluster[:, 1], color="C%d" % i, s=50, alpha=0.1)
+# plt.scatter(all_points[:, 0], all_points[:, 1], color="black", s=50, alpha=0.1)
+plt.title("Clustering result: %s cluster" % (i+1))
+plt.draw()
 plt.pause(9999)
 
