@@ -38,7 +38,7 @@ while True:
     plt.ylim((0, 1.0))
     plt.xlim((0, 1.0))
 
-    plt.title("iteration %s" % iteration)
+    plt.title("iteration %s, Error: %.4f" % (iteration, best_distant))
     plt.pause(0.5)
     plt.draw()
     plt.clf()
