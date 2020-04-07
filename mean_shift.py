@@ -43,7 +43,7 @@ while True:
     for i, rp in enumerate(all_points):
         centroid = centroid_arr[i]
 
-        eligible_points = neighborhood_points(all_points, centroid, dist=5)
+        eligible_points = neighborhood_points(all_points, centroid, dist=4)
         new_centroid = np.mean(eligible_points, axis=0)
 
         # Record distance between new and old centroid in oder to determine convergence.
@@ -58,7 +58,7 @@ while True:
     plt.draw()
     plt.clf()
     # We assume converged when centroid no more updated that same as k-means.
-    if mean_distance < 0.001:
+    if mean_distance < 0.0001:
         break
     iteration += 1
 
@@ -68,7 +68,7 @@ sorted_all = all_points[ind]
 centroid_diff = np.linalg.norm(np.diff(sorted_centroids, axis=0), axis=1)
 cluster_idx = np.argwhere(centroid_diff > 1)
 splited_cluster = np.split(sorted_all, cluster_idx.ravel())
-splited_centroid = np.split(centroid_arr, cluster_idx.ravel())
+splited_centroid = np.split(sorted_centroids, cluster_idx.ravel())
 for i, (cluster, centroids) in enumerate(zip(splited_cluster, splited_centroid)):
     new_centroid = np.mean(centroids, axis=0)
     plt.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
