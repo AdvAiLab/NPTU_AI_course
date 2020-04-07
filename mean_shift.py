@@ -33,6 +33,7 @@ def neighborhood_points(xs, x_centroid, dist=3):
 
 iteration = 0
 
+# Make all points as centroids
 centroid_arr = np.copy(all_points)
 
 while True:
@@ -62,18 +63,39 @@ while True:
         break
     iteration += 1
 
+
+def direct_calculate():
+    sorted_all = all_points[ind]
+    splited_cluster = np.split(sorted_all, cluster_idx.ravel())
+
+    for i, (cluster, centroids) in enumerate(zip(splited_cluster, splited_centroid)):
+        new_centroid = np.mean(centroids, axis=0)
+        plt.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
+        plt.scatter(cluster[:, 0], cluster[:, 1], color="C%d" % i, s=50, alpha=0.1)
+
+
+def k_means(centroids, points_num):
+    distant_arr = np.zeros(points_num, len(centroids))
+    # Calculate distance per point with each centroid.
+    for i, (cp, color) in enumerate(centroids):
+        plt.scatter(*cp, color="C%d" % i, marker='+', s=200)
+
+        for j, point in enumerate(all_points):
+            distant_arr[j, i] = np.linalg.norm(cp - point)
+
+    # Get minimal distance between each centroid and each point.
+    for point, clusters_distant in zip(all_points, distant_arr):
+        color_idx = np.argmin(clusters_distant)
+        plt.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
+
+
 ind = np.lexsort((centroid_arr[:, 1], centroid_arr[:, 0]))
 sorted_centroids = centroid_arr[ind]
-sorted_all = all_points[ind]
 centroid_diff = np.linalg.norm(np.diff(sorted_centroids, axis=0), axis=1)
 cluster_idx = np.argwhere(centroid_diff > 1)
-splited_cluster = np.split(sorted_all, cluster_idx.ravel())
 splited_centroid = np.split(sorted_centroids, cluster_idx.ravel())
-for i, (cluster, centroids) in enumerate(zip(splited_cluster, splited_centroid)):
-    new_centroid = np.mean(centroids, axis=0)
-    plt.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
-    plt.scatter(cluster[:, 0], cluster[:, 1], color="C%d" % i, s=50, alpha=0.1)
-# plt.scatter(all_points[:, 0], all_points[:, 1], color="black", s=50, alpha=0.1)
+
+
 plt.title("Clustering result: %s cluster" % (i+1))
 plt.draw()
 plt.pause(9999)
