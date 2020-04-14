@@ -30,7 +30,8 @@ all_points = np.concatenate(points_list)
 # Calculate distance between test point and each point
 for i, ap in enumerate(all_points):
     distant_arr[i] = np.linalg.norm(test_point - ap)
-# Find neighbor points which has minimal distance
+
+# Get neighbor points from sorted distance
 min_idx = np.argsort(distant_arr)
 neighbor_points = all_points[min_idx][:neighbors_K]
 neighbor_colors = color_per_point[min_idx][:neighbors_K]

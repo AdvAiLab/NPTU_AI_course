@@ -18,6 +18,7 @@ copy_num = chromosome_num - selection_num
 
 best_goal = None
 best_fitness = 0.0
+early_stop_fitness = 0.99
 
 # First time we generate population using Uniform Distribution
 population = np.random.rand(*population_shape)
@@ -37,6 +38,11 @@ while True:
         best_fitness = fitness_list[max_idx]
         best_goal = np.copy(max_chromosome)
         print(best_goal)
+
+    # We assume converged when arrive early_stop_fitness.
+    if best_fitness > early_stop_fitness:
+        break
+    plt.clf()
 
     # Plot
     plt.scatter(population[:, 0], population[:, 1], s=50, alpha=0.5)
@@ -62,9 +68,11 @@ while True:
     # Crossover
     for i, chromosome in enumerate(population):
         if np.random.rand(1) <= mutation_rate:
+            # Prevent to crossover with self
             parent_idx = np.random.randint(population.shape[0] - 1)
             if parent_idx >= i:
                 parent_idx += 1
+
             rand_index = np.random.choice(chromosome.shape[0], 1)
             # Swap
             buff_gene = population[parent_idx][rand_index]
@@ -72,15 +80,11 @@ while True:
             population[i][rand_index] = buff_gene
 
     # Mutation
-    for i, p in enumerate(population):
+    for i, chromosome in enumerate(population):
         if np.random.rand(1) <= mutation_rate:
-            rand_index = np.random.randint(p.shape[0])
+            rand_index = np.random.randint(chromosome.shape[0])
             population[i][rand_index] = np.random.rand(1)
 
-    # We assume converged when centroid no more updated that same as k-means.
-    if best_fitness > 0.8:
-        break
-    plt.clf()
     iteration += 1
 
 plt.show()
