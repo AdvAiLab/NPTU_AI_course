@@ -2,17 +2,25 @@ import time
 
 import numpy as np
 import matplotlib.pyplot as plt
+from util_3d import add_plot
+
+is_3d = True
+ax, point_dim = add_plot(is_3d)
 
 n_cluster_points = 100
-point_dim = 2
 cluster_shape = (n_cluster_points, point_dim)
 means_K = 4
+early_stop_distant = 0.01
 
 # Randomly generate clusters using Normal Distribution (randn)
 rand_points1 = 0 + 2 * np.random.randn(*cluster_shape)
 rand_points2 = 10 + 3 * np.random.randn(*cluster_shape)
-rand_points3 = [20, 0] + 2 * np.random.randn(*cluster_shape)
-rand_points4 = [30, 20] + 1.5 * np.random.randn(*cluster_shape)
+if is_3d:
+    rand_points3 = [20, 0, 5] + 2 * np.random.randn(*cluster_shape)
+    rand_points4 = [30, 20, 10] + 1.5 * np.random.randn(*cluster_shape)
+else:
+    rand_points3 = [20, 0] + 2 * np.random.randn(*cluster_shape)
+    rand_points4 = [30, 20] + 1.5 * np.random.randn(*cluster_shape)
 points_num = n_cluster_points * means_K
 all_points = np.concatenate((rand_points1, rand_points2, rand_points3, rand_points4))
 
@@ -20,16 +28,14 @@ all_points = np.concatenate((rand_points1, rand_points2, rand_points3, rand_poin
 rand_indexes = np.random.choice(all_points.shape[0], means_K, replace=False)
 centroids = all_points[rand_indexes]
 
-cluster_colors = ["red", "blue", "green", "purple"]
-
 distant_arr = np.zeros((points_num, means_K))
 iteration = 0
 # Loop until converged.
 while True:
-    points_per_cluster = [[] for _ in cluster_colors]
+    points_per_cluster = [[] for _ in range(means_K)]
     # Calculate distance per point with each centroid.
-    for i, (cp, color) in enumerate(zip(centroids, cluster_colors)):
-        plt.scatter(*cp, color=color, marker='+', s=200)
+    for i, cp in enumerate(centroids):
+        ax.scatter(*cp, color="C%d" % i, marker='+', s=200)
 
         for j, point in enumerate(all_points):
             distant_arr[j, i] = np.linalg.norm(cp - point)
@@ -38,16 +44,16 @@ while True:
     for point, clusters_distant in zip(all_points, distant_arr):
         color_idx = np.argmin(clusters_distant)
         points_per_cluster[color_idx].append(point)
-        plt.scatter(*point, color=cluster_colors[color_idx], s=50, alpha=0.1)
+        ax.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
 
     centroids_distant = 0
     new_centroids = []
     # Calculate the mean of each cluster to got the new centroid of each cluster
-    for cluster, color, old_centroid in zip(points_per_cluster, cluster_colors, centroids):
-        new_centroid = np.average(cluster, axis=0)
+    for i, (cluster, old_centroid) in enumerate(zip(points_per_cluster, centroids)):
+        new_centroid = np.mean(cluster, axis=0)
         # Record distance between new and old centroid in oder to determine convergence.
         centroids_distant += np.linalg.norm(new_centroid - old_centroid)
-        plt.scatter(*new_centroid, color=color, s=200, marker="*")
+        ax.scatter(*new_centroid, color="C%d" % i, s=200, marker="*")
         new_centroids.append(new_centroid)
     centroids = new_centroids
 
@@ -57,8 +63,8 @@ while True:
     iteration += 1
 
     # We assume converged when centroid no more updated
-    if centroids_distant < 0.01:
+    if centroids_distant < early_stop_distant:
         break
     # Only clear figure on non-last figure
-    plt.clf()
+    ax.clear()
 plt.pause(9999)

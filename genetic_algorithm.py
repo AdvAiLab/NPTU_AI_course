@@ -1,14 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from util_3d import add_plot
+
+is_3d = True
+ax, gene_num = add_plot(is_3d)
 
 chromosome_num = 10
-gene_num = 2
 population_shape = (chromosome_num, gene_num)
 
 test_goal = np.random.rand(gene_num)
 
 iteration = 0
 iteration_num = 100
+
+# Parameters
 mutation_rate = 0.3
 crossover_rate = 0.3
 selection_ratio = 0.3
@@ -42,15 +47,17 @@ while True:
     # We assume converged when arrive early_stop_fitness.
     if best_fitness > early_stop_fitness:
         break
-    plt.clf()
+    ax.clear()
 
     # Plot
-    plt.scatter(population[:, 0], population[:, 1], s=50, alpha=0.5)
-    plt.scatter(*test_goal, s=200, marker="*", alpha=1.0)
-    plt.scatter(*best_goal, s=200, marker="+", alpha=1.0)
+    ax.scatter(*population.T, s=50, alpha=0.5)
+    ax.scatter(*test_goal, s=200, marker="*", alpha=1.0)
+    ax.scatter(*best_goal, s=200, marker="+", alpha=1.0)
 
     plt.ylim(0, 1)
     plt.xlim(0, 1)
+    if is_3d:
+        ax.set_zlim3d(0, 1)
 
     plt.title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
     plt.pause(0.5)
@@ -67,7 +74,7 @@ while True:
 
     # Crossover
     for i, chromosome in enumerate(population):
-        if np.random.rand(1) <= mutation_rate:
+        if np.random.rand(1) <= crossover_rate:
             # Prevent to crossover with self
             parent_idx = np.random.randint(population.shape[0] - 1)
             if parent_idx >= i:

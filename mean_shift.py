@@ -3,22 +3,27 @@ from statistics import mean
 
 import numpy as np
 import matplotlib.pyplot as plt
+from util_3d import add_plot
+
+is_3d = True
+ax, point_dim = add_plot(is_3d)
 
 n_cluster_points = 100
-point_dim = 2
 cluster_shape = (n_cluster_points, point_dim)
 
 # Randomly generate clusters using Normal Distribution (randn)
-rand_points = 0 + 2 * np.random.randn(*cluster_shape)
+rand_points1 = 0 + 2 * np.random.randn(*cluster_shape)
 rand_points2 = 10 + 3 * np.random.randn(*cluster_shape)
-rand_points3 = [20, 0] + 2 * np.random.randn(*cluster_shape)
-rand_points4 = [20, 20] + 1.5 * np.random.randn(*cluster_shape)
+if is_3d:
+    rand_points3 = [20, 0, 5] + 2 * np.random.randn(*cluster_shape)
+    rand_points4 = [20, 20, 10] + 1.5 * np.random.randn(*cluster_shape)
+else:
+    rand_points3 = [20, 0] + 2 * np.random.randn(*cluster_shape)
+    rand_points4 = [20, 20] + 1.5 * np.random.randn(*cluster_shape)
 
-all_points = np.concatenate((rand_points, rand_points2, rand_points3, rand_points4), axis=0)
-
-# We only need random point rather than cluster so using uniform distribution.
-# centroid = 10 * np.random.rand(point_dim) - 5
-cluster_colors = ["red", "blue", "green", "purple"]
+all_points = (rand_points1, rand_points2, rand_points3, rand_points4)
+points_num = n_cluster_points * len(all_points)
+all_points = np.concatenate(all_points, axis=0)
 
 
 def neighborhood_points(xs, x_centroid, dist=3):
@@ -36,9 +41,10 @@ iteration = 0
 # Make all points as centroids
 centroid_arr = np.copy(all_points)
 
+# Iterate until converged
 while True:
-    plt.scatter(all_points[:, 0], all_points[:, 1], color="blue", s=50, alpha=0.1)
-    plt.scatter(centroid_arr[:, 0], centroid_arr[:, 1], color="red", s=50, alpha=0.1)
+    ax.scatter(*all_points.T, color="blue", s=50, alpha=0.1)
+    ax.scatter(*centroid_arr.T, color="red", s=50, alpha=0.1)
 
     distant_list = []
     for i, rp in enumerate(all_points):
@@ -57,43 +63,34 @@ while True:
     plt.title("iteration %s, mean_distance=%.4f" % (iteration, mean_distance))
     plt.pause(0.5)
     plt.draw()
-    plt.clf()
+    ax.clear()
     # We assume converged when centroid no more updated that same as k-means.
     if mean_distance < 0.0001:
         break
     iteration += 1
 
-
-def direct_calculate():
-    sorted_all = all_points[ind]
-    splited_cluster = np.split(sorted_all, cluster_idx.ravel())
-
-    for i, (cluster, centroids) in enumerate(zip(splited_cluster, splited_centroid)):
-        new_centroid = np.mean(centroids, axis=0)
-        plt.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
-        plt.scatter(cluster[:, 0], cluster[:, 1], color="C%d" % i, s=50, alpha=0.1)
-
-
-def k_means(centroids, points_num):
-    distant_arr = np.zeros(points_num, len(centroids))
-    # Calculate distance per point with each centroid.
-    for i, (cp, color) in enumerate(centroids):
-        plt.scatter(*cp, color="C%d" % i, marker='+', s=200)
-
-        for j, point in enumerate(all_points):
-            distant_arr[j, i] = np.linalg.norm(cp - point)
-
-    # Get minimal distance between each centroid and each point.
-    for point, clusters_distant in zip(all_points, distant_arr):
-        color_idx = np.argmin(clusters_distant)
-        plt.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
-
-
+# Sort all centroid(points) alone x then y value
 ind = np.lexsort((centroid_arr[:, 1], centroid_arr[:, 0]))
 sorted_centroids = centroid_arr[ind]
+
+# If distance between points greater than threshold we split sorted centroids from those position to make cluster
 centroid_diff = np.linalg.norm(np.diff(sorted_centroids, axis=0), axis=1)
-cluster_idx = np.argwhere(centroid_diff > 1)
-splited_centroid = np.split(sorted_centroids, cluster_idx.ravel())
+split_idx = np.argwhere(centroid_diff > 1).ravel()
+clustered_centroid = np.split(sorted_centroids, split_idx)
+
+# Combine with k-means algorithm
+distant_arr = np.zeros((points_num, len(split_idx) + 1))
+
+for i, centroids in enumerate(clustered_centroid):
+    new_centroid = np.mean(centroids, axis=0)
+    ax.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
+    for j, point in enumerate(all_points):
+        distant_arr[j, i] = np.linalg.norm(new_centroid - point)
+
+# Get minimal distance between each centroid and each point, and choose the centroid point.
+for point, clusters_distant in zip(all_points, distant_arr):
+    color_idx = np.argmin(clusters_distant)
+    ax.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
 
 
 plt.title("Clustering result: %s cluster" % (i+1))
