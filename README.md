@@ -3,12 +3,12 @@
 ### 2D
 ![alt text](docs/k_NN.png "K Nearest Neighbor")
 ### 3D
-![alt text](docs/knn_3d.png "K Nearest Neighbor")
+![alt text](docs/knn_3d.gif "K Nearest Neighbor")
 ## K Means
 ### 2D
 ![alt text](docs/k_means.gif "K Means")
 ### 3D
-![alt text](docs/k_means_3d.png "K Means")
+![alt text](docs/k_means_3d.gif "K Means")
 ## Mean Shift
 ### 2D
 ![alt text](docs/mean_shift.gif "Mean Shift")
