@@ -3,7 +3,7 @@ import numpy as np
 
 from util_3d import add_plot
 
-is_3d = False
+is_3d = True
 ax, point_dim = add_plot(is_3d)
 
 # Number of points of cluster

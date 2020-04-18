@@ -57,7 +57,7 @@ while True:
         new_centroids.append(new_centroid)
     centroids = new_centroids
 
-    plt.title("iteration %s, Centroids distant=%.4f" % (iteration, centroids_distant))
+    plt.title("iteration %s, Updated distant=%.4f" % (iteration, centroids_distant))
     plt.draw()
     plt.pause(0.001)
     iteration += 1

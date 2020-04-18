@@ -44,9 +44,6 @@ while True:
         best_goal = np.copy(max_chromosome)
         print(best_goal)
 
-    # We assume converged when arrive early_stop_fitness.
-    if best_fitness > early_stop_fitness:
-        break
     ax.clear()
 
     # Plot
@@ -63,6 +60,9 @@ while True:
     plt.pause(0.5)
     plt.draw()
 
+    # We assume converged when arrive early_stop_fitness.
+    if best_fitness > early_stop_fitness:
+        break
     # Genetic Algorithm
 
     # Selection

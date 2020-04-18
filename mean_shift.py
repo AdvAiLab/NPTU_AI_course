@@ -60,7 +60,7 @@ while True:
         centroid_arr[i] = new_centroid
 
     mean_distance = mean(distant_list)
-    plt.title("iteration %s, mean_distance=%.4f" % (iteration, mean_distance))
+    plt.title("iteration %s, Updated distance=%.4f" % (iteration, mean_distance))
     plt.pause(0.5)
     plt.draw()
     ax.clear()

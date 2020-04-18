@@ -1,7 +1,26 @@
 # NPTU AI Course
-## K nearest neighbor
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
-## K means
-## Mean shift
-## Random search
+## K Nearest Neighbor
+### 2D
+![alt text](docs/k_NN.png "K Nearest Neighbor")
+### 3D
+![alt text](docs/knn_3d.png "K Nearest Neighbor")
+## K Means
+### 2D
+![alt text](docs/k_means.gif "K Means")
+### 3D
+![alt text](docs/k_means_3d.png "K Means")
+## Mean Shift
+### 2D
+![alt text](docs/mean_shift.gif "Mean Shift")
+### 3D
+![alt text](docs/mean_shift_3d.gif "Mean Shift")
+## Random Search
+### 2D
+![alt text](docs/rand_search.gif "Random Search")
+### 3D
+![alt text](docs/rand_search_3d.gif "Random Search")
 ## Genetic Algorithm
+### 2D
+![alt text](docs/gene_algo.gif "Genetic Algorithm")
+### 3D
+![alt text](docs/gene_algo_3d.gif "Genetic Algorithm")
