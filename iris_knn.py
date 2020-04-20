@@ -44,6 +44,7 @@ results = ["C%d" % c for c in y]
 if len(results) == 1:
     ax.scatter(*test_point, color=results[0], marker="*", s=200)
 else:
-    raise AssertionError("You got multiple predicted result: %s" % results)
+    ax.scatter(*test_point, color="black", marker="*", s=200)
+    print("You got multiple predicted colors: %s" % results)
 
 plt.show()
