@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from util_3d import add_plot
 
-is_3d = True
+is_3d = False
 ax, point_dim = add_plot(is_3d)
 
 n_cluster_points = 100
@@ -67,4 +67,5 @@ while True:
         break
     # Only clear figure on non-last figure
     ax.clear()
-plt.pause(9999)
+# Show end plot forever
+plt.show()

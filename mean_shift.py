@@ -94,6 +94,6 @@ for point, clusters_distant in zip(all_points, distant_arr):
 
 
 plt.title("Clustering result: %s cluster" % (i+1))
-plt.draw()
-plt.pause(9999)
+# Show end plot forever
+plt.show()
 
