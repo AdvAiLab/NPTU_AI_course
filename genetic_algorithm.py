@@ -63,6 +63,7 @@ while True:
     # We assume converged when arrive early_stop_fitness.
     if best_fitness > early_stop_fitness:
         break
+
     # Genetic Algorithm
 
     # Selection

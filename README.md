@@ -1,5 +1,5 @@
 # NPTU AI Course
-## K Nearest Neighbor
+## K Nearest Neighbor and Iris KNN
 ### 2D
 ![alt text](docs/k_NN.png "K Nearest Neighbor")
 ### 3D

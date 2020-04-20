@@ -1,42 +1,37 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets
+from util_3d import add_plot
+
+
+is_3d = True
+ax, point_dim = add_plot(is_3d)
+
 
 # import some data to play with
 iris = datasets.load_iris()
-X = iris.data[:, :2]  # we only take the first two features.
+X = iris.data[:, :point_dim]  # we only take the first point_dim features.
 y = iris.target
 
-from util_3d import add_plot
-
-is_3d = False
-ax, point_dim = add_plot(is_3d)
+if is_3d:
+    test_point = np.array([7, 4, 3])
+else:
+    test_point = np.array([7, 4])
 
 # Set number of neighbors and (x, y) of test point.
 neighbors_K = 3
 
-total_points_num = n_cluster_points * 3
-points_list = [rand_points1, rand_points2, rand_points3]
-distant_arr = np.zeros(total_points_num)
+distant_arr = np.zeros(len(y))
 
-for i, cluster in enumerate(points_list):
+for i, (point, color_idx) in enumerate(zip(X, y)):
     # Plot all points
-    ax.scatter(*cluster.T, color="C%d" % i, s=50, alpha=0.1)
-    # Create color for each point
-    points_color_idx.append(np.full(n_cluster_points, i, dtype=int))
-
-# Make list to concatenated np array alone axis 0
-points_color_idx = np.concatenate(points_color_idx)
-all_points = np.concatenate(points_list)
-
-# Calculate distance between test point and each point
-for i, ap in enumerate(all_points):
-    distant_arr[i] = np.linalg.norm(test_point - ap)
+    ax.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
+    distant_arr[i] = np.linalg.norm(test_point - point)
 
 # Get neighbor points from sorted distance
 min_idx = np.argsort(distant_arr)[:neighbors_K]
-neighbor_points = all_points[min_idx]
-neighbor_colors_idx = points_color_idx[min_idx]
+neighbor_points = X[min_idx]
+neighbor_colors_idx = y[min_idx]
 
 # Emphasize neighbor points
 for p, color_idx in zip(neighbor_points, neighbor_colors_idx):
