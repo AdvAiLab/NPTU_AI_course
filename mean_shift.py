@@ -1,6 +1,3 @@
-import time
-from statistics import mean
-
 import numpy as np
 import matplotlib.pyplot as plt
 from util_3d import add_plot
@@ -56,13 +53,13 @@ while True:
         # Record distance between new and old centroid in oder to determine convergence.
         distant_list.append(np.linalg.norm(new_centroid - centroid))
 
-        # Only clear figure on non-last figure
+        # Update centroid
         centroid_arr[i] = new_centroid
 
-    mean_distance = mean(distant_list)
+    mean_distance = np.mean(distant_list)
     plt.title("iteration %s, Updated distance=%.4f" % (iteration, mean_distance))
-    plt.pause(0.5)
     plt.draw()
+    plt.pause(0.5)
     ax.clear()
     # We assume converged when centroid no more updated that same as k-means.
     if mean_distance < 0.0001:
@@ -79,19 +76,20 @@ split_idx = np.argwhere(centroid_diff > 1).ravel()
 clustered_centroid = np.split(sorted_centroids, split_idx)
 
 # Combine with k-means algorithm
-distant_arr = np.zeros((points_num, len(split_idx) + 1))
-
+new_centroids = []
 for i, centroids in enumerate(clustered_centroid):
     new_centroid = np.mean(centroids, axis=0)
     ax.scatter(*new_centroid, color="C%d" % i, marker="*", s=200, alpha=1.0)
-    for j, point in enumerate(all_points):
-        distant_arr[j, i] = np.linalg.norm(new_centroid - point)
+    new_centroids.append(new_centroid)
 
-# Get minimal distance between each centroid and each point, and choose the centroid point.
-for point, clusters_distant in zip(all_points, distant_arr):
-    color_idx = np.argmin(clusters_distant)
-    ax.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
-
+for point in all_points:
+    distant_per_centroid = []
+    # Calculate distance per point with each centroid.
+    for cp in new_centroids:
+        distant_per_centroid.append(np.linalg.norm(cp - point))
+    # Get minimal distance between each centroid and each point, and choose the centroid point.
+    cluster_idx = np.argmin(distant_per_centroid)
+    ax.scatter(*point, color="C%d" % cluster_idx, s=50, alpha=0.1)
 
 plt.title("Clustering result: %s cluster" % (i+1))
 # Show end plot forever

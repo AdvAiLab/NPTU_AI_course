@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from util_3d import add_plot
 
-is_3d = False
+is_3d = True
 ax, point_dim = add_plot(is_3d)
 
 n_cluster_points = 100
@@ -33,29 +33,29 @@ iteration = 0
 # Loop until converged.
 while True:
     points_per_cluster = [[] for _ in range(means_K)]
-    # Calculate distance per point with each centroid.
-    for i, cp in enumerate(centroids):
-        ax.scatter(*cp, color="C%d" % i, marker='+', s=200)
 
-        for j, point in enumerate(all_points):
-            distant_arr[j, i] = np.linalg.norm(cp - point)
-
-    # Get minimal distance between each centroid and each point, then put in the plotting array per color.
-    for point, clusters_distant in zip(all_points, distant_arr):
-        color_idx = np.argmin(clusters_distant)
-        points_per_cluster[color_idx].append(point)
-        ax.scatter(*point, color="C%d" % color_idx, s=50, alpha=0.1)
+    # Get minimal distance between each centroid and each point,
+    # then put in the points array per cluster.
+    for point in all_points:
+        distant_per_centroid = []
+        # Calculate distance per point with each centroid.
+        for cp in centroids:
+            distant_per_centroid.append(np.linalg.norm(cp - point))
+        cluster_idx = np.argmin(distant_per_centroid)
+        points_per_cluster[cluster_idx].append(point)
+        ax.scatter(*point, color="C%d" % cluster_idx, s=50, alpha=0.1)
 
     centroids_distant = 0
-    new_centroids = []
+
     # Calculate the mean of each cluster to got the new centroid of each cluster
     for i, (cluster, old_centroid) in enumerate(zip(points_per_cluster, centroids)):
+        ax.scatter(*old_centroid, color="C%d" % i, marker='+', s=200)
         new_centroid = np.mean(cluster, axis=0)
         # Record distance between new and old centroid in oder to determine convergence.
         centroids_distant += np.linalg.norm(new_centroid - old_centroid)
         ax.scatter(*new_centroid, color="C%d" % i, s=200, marker="*")
-        new_centroids.append(new_centroid)
-    centroids = new_centroids
+        # Update centroid
+        centroids[i] = new_centroid
 
     plt.title("iteration %s, Updated distant=%.4f" % (iteration, centroids_distant))
     plt.draw()

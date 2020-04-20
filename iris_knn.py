@@ -3,10 +3,8 @@ import numpy as np
 from sklearn import datasets
 from util_3d import add_plot
 
-
 is_3d = True
 ax, point_dim = add_plot(is_3d)
-
 
 # import some data to play with
 iris = datasets.load_iris()
