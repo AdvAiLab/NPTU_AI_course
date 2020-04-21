@@ -68,29 +68,30 @@ while True:
 
     # Selection
     sorted_idx = np.argsort(fitness_list)
-    selected_pop = population[sorted_idx][-selection_num:]
-    copy_idx = np.random.choice(selected_pop.shape[0], copy_num)
-    copy_pop = selected_pop[copy_idx]
-    population = np.concatenate((selected_pop, copy_pop))
+    selected_chromosomes = population[sorted_idx][-selection_num:]
+    # Copy selected chromosomes randomly to fulfill original length of population
+    copy_idx = np.random.choice(selected_chromosomes.shape[0], copy_num)
+    copy_pop = selected_chromosomes[copy_idx]
+    population = np.concatenate((selected_chromosomes, copy_pop))
 
     # Crossover
-    for i, chromosome in enumerate(population):
+    for i in range(chromosome_num):
         if np.random.rand(1) <= crossover_rate:
             # Prevent to crossover with self
             parent_idx = np.random.randint(population.shape[0] - 1)
             if parent_idx >= i:
                 parent_idx += 1
 
-            rand_index = np.random.choice(chromosome.shape[0], 1)
+            rand_index = np.random.choice(gene_num, 1)
             # Swap
             buff_gene = population[parent_idx][rand_index]
             population[parent_idx][rand_index] = population[i][rand_index]
             population[i][rand_index] = buff_gene
 
     # Mutation
-    for i, chromosome in enumerate(population):
+    for i in range(chromosome_num):
         if np.random.rand(1) <= mutation_rate:
-            rand_index = np.random.randint(chromosome.shape[0])
+            rand_index = np.random.randint(gene_num)
             population[i][rand_index] = np.random.rand(1)
 
     iteration += 1
