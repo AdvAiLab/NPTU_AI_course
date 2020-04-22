@@ -18,12 +18,12 @@ mutation_rate = 0.3
 crossover_rate = 0.3
 selection_ratio = 0.3
 
-selection_num = int(chromosome_num*selection_ratio)
+selection_num = int(chromosome_num * selection_ratio)
 copy_num = chromosome_num - selection_num
 
 best_goal = None
 best_fitness = 0.0
-early_stop_fitness = 0.99
+early_stop_fitness = 0.98
 
 # First time we generate population using Uniform Distribution
 population = np.random.rand(*population_shape)
@@ -44,7 +44,6 @@ while True:
         best_goal = np.copy(max_chromosome)
         print(best_goal)
 
-    ax.clear()
 
     # Plot
     ax.scatter(*population.T, s=50, alpha=0.5)
@@ -57,12 +56,13 @@ while True:
         ax.set_zlim3d(0, 1)
 
     plt.title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
-    plt.pause(0.5)
     plt.draw()
-
+    plt.pause(0.5)
     # We assume converged when arrive early_stop_fitness.
     if best_fitness > early_stop_fitness:
+        plt.title("Stop at iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
         break
+    ax.clear()
 
     # Genetic Algorithm
 
