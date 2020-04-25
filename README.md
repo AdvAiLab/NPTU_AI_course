@@ -24,3 +24,5 @@
 ![alt text](docs/gene_algo.gif "Genetic Algorithm")
 ### 3D
 ![alt text](docs/gene_algo_3d.gif "Genetic Algorithm")
+## Reversed Ackley function optimization using GA
+![alt text](docs/reversed_ackley_GA.gif "Reversed Ackley function GA optimization")
