@@ -73,6 +73,7 @@ while True:
 
     # Calculate fitness
     fitness = reversed_ackley_function(*population[:, :2].T)
+    population[:, 2] = fitness
 
     # Normalize all to between 0 to 1
     fitness_arr = fitness / zz[goal_idx]
@@ -115,21 +116,20 @@ while True:
     population = np.concatenate((selected_chromosomes, copy_pop))
 
     # Crossover
-    chrome_rate = np.random.rand(chromosome_num)
-    chrome_rate = np.argwhere(chrome_rate <= crossover_rate)
-    parent_idx = np.random.randint(population.shape[0], size=chrome_rate.shape[0])
-    rand_index = np.random.randint(gene_num, size=chrome_rate.shape[0])
-    print(parent_idx, rand_index)
+    pick_idx = np.random.rand(chromosome_num)
+    pick_idx = np.nonzero(pick_idx <= crossover_rate)[0]
+    parent_idx = np.random.randint(chromosome_num, size=pick_idx.shape[0])
+    rand_index = np.random.randint(gene_num, size=pick_idx.shape[0])
     # Swap
-    buff_gene = population[parent_idx][rand_index]
-    population[parent_idx][rand_index] = population[chrome_rate][rand_index]
-    population[chrome_rate][rand_index] = buff_gene
+    buff_gene = population[parent_idx, rand_index]
+    population[parent_idx, rand_index] = population[pick_idx, rand_index]
+    population[pick_idx, rand_index] = buff_gene
 
     # Mutation
-    chrome_rate = np.random.rand(chromosome_num)
-    chrome_rate = np.argwhere(chrome_rate <= mutation_rate)
-    rand_index = np.random.randint(gene_num, size=chromosome_num)
-    population[chrome_rate][rand_index] = np.random.normal(best_goal[rand_index])
+    pick_idx = np.random.rand(chromosome_num)
+    pick_idx = np.nonzero(pick_idx <= crossover_rate)[0]
+    rand_index = np.random.randint(gene_num, size=pick_idx.shape[0])
+    population[pick_idx, rand_index] = np.random.normal(best_goal[rand_index])
 
     iteration += 1
 # Show end plot forever
