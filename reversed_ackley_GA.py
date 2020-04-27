@@ -2,11 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-np.set_printoptions(threshold=np.inf)
 fig = plt.figure(figsize=(6, 8))
-mngr = plt.get_current_fig_manager()
-# to put it into the upper left corner for example:
-mngr.window.wm_geometry("+350+100")
 ax1 = fig.add_subplot(211, projection='3d')
 ax2 = fig.add_subplot(212)
 ax2.set_title("Learning curve")
@@ -20,7 +16,7 @@ y_max = 4
 z_min = 0
 z_max = 13
 
-
+# Add step to make more smooth and more slow
 x = np.arange(x_min, x_max, 0.5)
 y = np.arange(y_min, y_max, 0.5)
 xx, yy = np.meshgrid(x, y, sparse=True)
@@ -47,9 +43,8 @@ gene_num = 2
 population_shape = (chromosome_num, gene_num)
 
 # Highest point on Reversed Ackley surface
-max_idx = np.unravel_index(np.argmax(zz, axis=None), zz.shape)
-ackley_max_z = zz[max_idx]
-test_goal = np.array((x[max_idx[0]], y[max_idx[1]], ackley_max_z))
+goal_idx = np.unravel_index(np.argmax(zz, axis=None), zz.shape)
+test_goal = np.array((x[goal_idx[0]], y[goal_idx[1]], zz[goal_idx]))
 
 iteration = 0
 iteration_num = 100
@@ -69,32 +64,30 @@ early_stop_fitness = 0.98
 # First time we generate population using Uniform Distribution
 rand_population = np.random.rand(*population_shape) * [x_max - x_min, y_max - y_min] + \
                   [x_min, y_min]
-population = np.concatenate((rand_population, np.zeros((rand_population.shape[0], 1))), axis=-1)
+# Add additional zero column
+population = np.zeros((population_shape[0], population_shape[1] + 1))
+population[:, :-1] = rand_population
 
 while True:
     plot_ackley()
 
     # Calculate fitness
-    fitness_list = []
-    for chromosome in population[:, :2]:
+    for i, chromosome in enumerate(population[:, :2]):
         fitness = reversed_ackley_function(*chromosome)
-        fitness_list.append(fitness)
+        # Set fitness to population axis to plot on surface
+        population[i, 2] = fitness
 
-    # Set fitness to population axis to plot on surface
-    fitness_list = np.array(fitness_list)
-    population[:, 2] = fitness_list
-
-    # Normalize to 0 to 1
-    fitness_list = fitness_list / ackley_max_z
+    # Normalize all to between 0 to 1
+    fitness_arr = population[:, 2] / zz[goal_idx]
 
     # Get best goal
-    max_idx = np.argmax(fitness_list)
+    max_idx = np.argmax(fitness_arr)
     max_chromosome = population[max_idx]
 
     old_fitness = best_fitness
 
-    if fitness_list[max_idx] > best_fitness:
-        best_fitness = fitness_list[max_idx]
+    if fitness_arr[max_idx] > best_fitness:
+        best_fitness = fitness_arr[max_idx]
         best_goal = np.copy(max_chromosome)
         print(best_goal)
 
@@ -117,7 +110,7 @@ while True:
     # Genetic Algorithm
 
     # Selection
-    sorted_idx = np.argsort(fitness_list)
+    sorted_idx = np.argsort(fitness_arr)
     selected_chromosomes = population[sorted_idx][-selection_num:]
     # Copy selected chromosomes randomly to fulfill original length of population
     copy_idx = np.random.choice(selected_chromosomes.shape[0], copy_num)
@@ -142,9 +135,9 @@ while True:
     for i in range(chromosome_num):
         if np.random.rand(1) <= mutation_rate:
             rand_index = np.random.randint(gene_num)
+            # we use random index of best_goal as origin of normal distribution
             population[i][rand_index] = np.random.normal(best_goal[rand_index])
 
     iteration += 1
 # Show end plot forever
-plt.draw()
 plt.show()
