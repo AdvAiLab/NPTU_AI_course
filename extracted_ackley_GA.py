@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
+from util_plot import AddPlot
 
-fig = plt.figure(figsize=(6, 8))
-ax1 = fig.add_subplot(211, projection='3d')
-ax2 = fig.add_subplot(212)
-ax2.set_title("Learning curve")
-ax2.set_xlim(0, 30)
-ax2.set_ylim(0, 1)
+p = AddPlot(is_3d=True, with_lc=True)
+ax1, _ = p.returns
 
 x_min = -4
 x_max = 4
@@ -82,8 +78,6 @@ while True:
     max_idx = np.argmax(fitness_arr)
     max_chromosome = population[max_idx]
 
-    old_fitness = best_fitness
-
     if fitness_arr[max_idx] > best_fitness:
         best_fitness = fitness_arr[max_idx]
         best_goal = np.copy(max_chromosome)
@@ -93,8 +87,7 @@ while True:
     ax1.scatter(*population.T, s=50, alpha=0.5)
     ax1.scatter(*test_goal, s=200, marker="*", alpha=1.0)
     ax1.scatter(*best_goal, s=200, marker="+", alpha=1.0)
-    if iteration > 0:
-        ax2.plot((iteration - 1, iteration), (old_fitness, best_fitness), color='C0')
+    p.plot_curve(iteration, best_fitness)
     # We assume converged when arrive early_stop_fitness.
     if best_fitness > early_stop_fitness:
         ax1.set_title("Stop at iteration %s, best_fitness: %.4f" % (iteration, best_fitness))

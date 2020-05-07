@@ -2,10 +2,10 @@ import time
 
 import numpy as np
 import matplotlib.pyplot as plt
-from util_3d import add_plot
+from util_plot import AddPlot
 
 is_3d = True
-ax, point_dim = add_plot(is_3d)
+ax, point_dim = AddPlot(is_3d).returns
 
 n_cluster_points = 100
 cluster_shape = (n_cluster_points, point_dim)

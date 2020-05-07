@@ -58,7 +58,6 @@ early_stop_fitness = 79
 iteration = 0
 max_iteration = 30
 while True:
-    ax1.clear()
 
     plot_rastrigin()
 
@@ -67,7 +66,7 @@ while True:
     fitness_arr = population[:, 2]
 
     max_idx = np.argmax(fitness_arr)
-    old_fitness = best_fitness
+    prev_fitness = best_fitness
 
     if fitness_arr[max_idx] > best_fitness:
         best_fitness = fitness_arr[max_idx]
@@ -77,7 +76,7 @@ while True:
     ax1.scatter(*best_goal, s=200, c='blue', marker='*')
 
     if iteration > 0:
-        ax2.plot((iteration - 1, iteration), (old_fitness, best_fitness), c='C0')
+        ax2.plot((iteration - 1, iteration), (prev_fitness, best_fitness), c='C0')
 
     if best_fitness < early_stop_fitness:
         ax1.set_title("iteration %d, fitness %.4f" % (iteration, best_fitness))
@@ -90,13 +89,14 @@ while True:
 
     plt.draw()
     plt.pause(0.5)
+    ax1.clear()
 
     # Genetic Algorithm
 
     # Selection
     sorted_idx = np.argsort(fitness_arr)
     seled_chromo = population[sorted_idx][-sel_num:]
-    copy_idx = np.random.choice(seled_chromo.shape[0], copy_num)
+    copy_idx = np.random.choice(sel_num, copy_num)
     copy_chromo = seled_chromo[copy_idx]
     population = np.concatenate((seled_chromo, copy_chromo))
 
@@ -122,5 +122,4 @@ while True:
     iteration += 1
 
 # Plot forever after finished
-plt.draw()
 plt.show()

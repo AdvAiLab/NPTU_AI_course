@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from util_3d import add_plot
+from util_plot import AddPlot
 
 is_3d = True
-ax, gene_num = add_plot(is_3d)
+ax, gene_num = AddPlot(is_3d).returns
 
 chromosome_num = 10
 population_shape = (chromosome_num, gene_num)

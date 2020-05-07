@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from util_3d import add_plot
+from util_plot import AddPlot
 
 is_3d = True
-ax, particle_dim = add_plot(is_3d)
+ax, particle_dim = AddPlot(is_3d).returns
 
 n_particles = 10
 particles_shape = (n_particles, particle_dim)

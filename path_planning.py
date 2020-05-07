@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from util_3d import add_plot
+from util_plot import AddPlot
 
 is_3d = True
-ax, data_dim = add_plot(is_3d)
+ax, data_dim = AddPlot(is_3d).returns
 
 # Make goal as gene
 gene_num = 5
@@ -28,7 +28,6 @@ early_stop_fitness = 1.0
 
 iteration = 0
 iter_num = 100
-plt.pause(3)
 while True:
     # Update all paths
     paths[:, 1:] = points[1:][population]

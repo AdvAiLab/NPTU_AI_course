@@ -2,10 +2,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from util_3d import add_plot
+from util_plot import AddPlot
 
 is_3d = True
-ax, point_dim = add_plot(is_3d)
+ax, point_dim = AddPlot(is_3d).returns
 
 # Number of points of cluster
 n_cluster_points = 20
