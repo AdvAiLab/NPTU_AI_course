@@ -1,7 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_dim = 2
+from util_3d import add_plot
+
+is_3d = True
+ax, data_dim = add_plot(is_3d)
+
 # Make goal as gene
 gene_num = 5
 chromosome_num = 10
@@ -24,6 +28,7 @@ early_stop_fitness = 1.0
 
 iteration = 0
 iter_num = 100
+plt.pause(3)
 while True:
     # Update all paths
     paths[:, 1:] = points[1:][population]
@@ -37,14 +42,16 @@ while True:
         best_chromosome = np.copy(paths[best_path_i])
 
     # Plot path
-    plt.scatter(*points[0], c="green", s=250, alpha=0.7, marker="*")
-    plt.scatter(*points[1:].T, c="red", s=250, alpha=0.7, marker="*")
+    ax.scatter(*points[0], c="green", s=250, alpha=0.7, marker="*")
+    ax.scatter(*points[1:].T, c="red", s=250, alpha=0.7, marker="*")
     for chromo in paths:
-        plt.plot(*chromo.T, c="grey")
-    plt.plot(*best_chromosome.T, c="blue")
+        ax.plot(*chromo.T, c="grey")
+    ax.plot(*best_chromosome.T, c="blue")
 
     plt.xlim(-0.1, 1.1)
     plt.ylim(-0.1, 1.1)
+    if is_3d:
+        ax.set_zlim(-0.1, 1.1)
     plt.grid()
 
     # We assume converged when arrive early_stop_fitness.
@@ -55,7 +62,7 @@ while True:
         plt.title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
     plt.draw()
     plt.pause(0.5)
-    plt.clf()
+    ax.clear()
 
     # Genetic Algorithm
 
