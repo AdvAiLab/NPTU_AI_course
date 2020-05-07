@@ -1,43 +1,77 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import datasets
+import numpy as np
 
 data_dim = 2
-goal_num = 5
+# Make goal as gene
+gene_num = 5
 chromosome_num = 10
 
-goals = np.random.rand(goal_num, data_dim)
-start_point = np.random.rand(data_dim)
-starts = np.repeat(start_point[np.newaxis], chromosome_num, axis=0)
+# Create points and paths
+points = np.random.rand(1+gene_num, data_dim)
+paths = np.zeros((chromosome_num, *points.shape)) + points
 
-temp = np.arange(goal_num)[np.newaxis]
-population = np.repeat(temp, chromosome_num, axis=0)
+population = np.zeros((chromosome_num, gene_num), dtype=int) + np.arange(gene_num)
 list(map(np.random.shuffle, population))
-starts = starts.reshape(10, 1, 2)
-points = np.concatenate((starts, goals[np.newaxis, population][0]), axis=1)
-print(points)
 
+# Parameters
+mutation_rate = 0.3
+selection_ratio = 0.7
+selection_num = int(chromosome_num * selection_ratio)
+copy_num = chromosome_num - selection_num
 
-def plot_path(color='blue'):
-    best_path_i = np.argmin(get_dist())
-    for chromo in points:
+best_fitness = 0.0
+early_stop_fitness = 1.0
+
+iteration = 0
+iter_num = 100
+while True:
+    # Update all paths
+    paths[:, 1:] = points[1:][population]
+    # Get fitness from distance
+    diff = np.diff(paths, axis=1)
+    dist_sum = np.linalg.norm(diff, axis=-1).sum(axis=1)
+    fitness_list = 1 / (1 + dist_sum)
+    best_path_i = np.argmax(fitness_list)
+    if fitness_list[best_path_i] > best_fitness:
+        best_fitness = fitness_list[best_path_i]
+        best_chromosome = np.copy(paths[best_path_i])
+
+    # Plot path
+    plt.scatter(*points[0], c="green", s=250, alpha=0.7, marker="*")
+    plt.scatter(*points[1:].T, c="red", s=250, alpha=0.7, marker="*")
+    for chromo in paths:
         plt.plot(*chromo.T, c="grey")
+    plt.plot(*best_chromosome.T, c="blue")
 
-    plt.plot(*points[best_path_i].T, c=color)
+    plt.xlim(-0.1, 1.1)
+    plt.ylim(-0.1, 1.1)
+    plt.grid()
 
+    # We assume converged when arrive early_stop_fitness.
+    if best_fitness > early_stop_fitness or iteration >= iter_num - 1:
+        plt.title("Stop at iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
+        break
+    else:
+        plt.title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
+    plt.draw()
+    plt.pause(0.5)
+    plt.clf()
 
-def get_dist():
-    dist = points[:-1] - points[1:]
-    dist_sum = np.linalg.norm(dist, axis=-1).sum()
-    return dist_sum
+    # Genetic Algorithm
 
+    # Selection
+    sorted_idx = np.argsort(fitness_list)
+    sel_chromo = population[sorted_idx][-selection_num:]
+    # Copy selected chromosomes randomly
+    copy_pop = sel_chromo[np.random.choice(selection_num, copy_num)]
+    # Append all to original length of population
+    population = np.concatenate((sel_chromo, copy_pop))
 
-plot_path(color='blue')
-
-plt.scatter(*goals.T, c="red", s=250, alpha=0.7, marker="*")
-plt.scatter(*start_point, c="green", s=250, alpha=0.7, marker="*")
-
-plt.xlim(-0.1, 1.1)
-plt.ylim(-0.1, 1.1)
-plt.grid()
+    # Mutation
+    rand_chromo = np.argwhere(np.random.rand(chromosome_num) <= mutation_rate)
+    # Swap
+    for i in rand_chromo:
+        rand_gene = np.random.choice(gene_num, 2, replace=False)
+        population[i, rand_gene] = population[i, rand_gene[::-1]]
+    iteration += 1
 plt.show()
