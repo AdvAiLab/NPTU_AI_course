@@ -62,10 +62,10 @@ old_fitness = 0.0
 early_stop_fitness = 0.98
 
 # First time we generate population using Uniform Distribution
-rand_population = np.random.rand(*population_shape) * [x_max - x_min, y_max - y_min] + \
+rand_population = np.random.rand(chromosome_num, gene_num) * [x_max - x_min, y_max - y_min] + \
                   [x_min, y_min]
 # Add additional zero column
-population = np.zeros((population_shape[0], population_shape[1] + 1))
+population = np.zeros((chromosome_num, gene_num + 1))
 population[:, :-1] = rand_population
 
 while True:
@@ -93,15 +93,17 @@ while True:
     ax1.scatter(*population.T, s=50, alpha=0.5)
     ax1.scatter(*test_goal, s=200, marker="*", alpha=1.0)
     ax1.scatter(*best_goal, s=200, marker="+", alpha=1.0)
-    ax1.set_title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
     if iteration > 0:
         ax2.plot((iteration - 1, iteration), (old_fitness, best_fitness), color='C0')
-    plt.draw()
-    plt.pause(0.5)
     # We assume converged when arrive early_stop_fitness.
     if best_fitness > early_stop_fitness:
         ax1.set_title("Stop at iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
         break
+    else:
+        ax1.set_title("iteration %s, best_fitness: %.4f" % (iteration, best_fitness))
+
+    plt.draw()
+    plt.pause(0.5)
     # Clear surface plot
     ax1.clear()
 
@@ -109,25 +111,21 @@ while True:
 
     # Selection
     sorted_idx = np.argsort(fitness_arr)
-    selected_chromosomes = population[sorted_idx][-selection_num:]
+    sel_chromo = population[sorted_idx][-selection_num:]
     # Copy selected chromosomes randomly to fulfill original length of population
-    copy_idx = np.random.choice(selected_chromosomes.shape[0], copy_num)
-    copy_pop = selected_chromosomes[copy_idx]
-    population = np.concatenate((selected_chromosomes, copy_pop))
+    copy_idx = np.random.choice(selection_num, copy_num)
+    copy_pop = sel_chromo[copy_idx]
+    population = np.concatenate((sel_chromo, copy_pop))
 
     # Crossover
-    pick_idx = np.random.rand(chromosome_num)
-    pick_idx = np.nonzero(pick_idx <= crossover_rate)[0]
+    pick_idx = (np.random.rand(chromosome_num) <= crossover_rate).nonzero()[0]
     parent_idx = np.random.randint(chromosome_num, size=pick_idx.shape[0])
     rand_index = np.random.randint(gene_num, size=pick_idx.shape[0])
     # Swap
-    buff_gene = population[parent_idx, rand_index]
-    population[parent_idx, rand_index] = population[pick_idx, rand_index]
-    population[pick_idx, rand_index] = buff_gene
+    population[[parent_idx, pick_idx], rand_index] = population[[pick_idx, parent_idx], rand_index]
 
     # Mutation
-    pick_idx = np.random.rand(chromosome_num)
-    pick_idx = np.nonzero(pick_idx <= crossover_rate)[0]
+    pick_idx = (np.random.rand(chromosome_num) <= mutation_rate).nonzero()[0]
     rand_index = np.random.randint(gene_num, size=pick_idx.shape[0])
     population[pick_idx, rand_index] = np.random.normal(best_goal[rand_index])
 
