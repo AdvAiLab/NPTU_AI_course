@@ -12,9 +12,9 @@ chromosome_num = 10
 
 # Create points and paths
 points = np.random.rand(1+gene_num, data_dim)
-paths = np.zeros((chromosome_num, *points.shape)) + points
+paths = np.repeat([points], chromosome_num, axis=0)
 
-population = np.zeros((chromosome_num, gene_num), dtype=int) + np.arange(gene_num)
+population = np.repeat([np.arange(gene_num)], chromosome_num, axis=0)
 list(map(np.random.shuffle, population))
 
 # Parameters
