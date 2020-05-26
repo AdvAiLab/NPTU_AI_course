@@ -25,7 +25,7 @@ y_train = keras.utils.to_categorical(labels, num_classes=3)
 print(y_train.shape)
 
 plt.scatter(*data.T, alpha=0.5, c=colors, s=50)
-predict_scat = plt.scatter([],[], alpha=0.5, marker="+", s=50)
+predict_scat = plt.scatter([], [], alpha=0.5, marker="+", s=50)
 
 plt.xlim(1.5, -1.5)
 plt.ylim(1.5, -1.5)
