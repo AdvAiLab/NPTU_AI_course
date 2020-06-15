@@ -3,7 +3,7 @@ import numpy as np
 
 from util_plot import AddPlot
 
-is_3d = False
+is_3d = True
 plots = AddPlot(is_3d)
 ax, data_dim = plots.returns
 
@@ -22,28 +22,14 @@ gbest_fitness = 0.0
 points = np.random.rand(1 + gene_num, data_dim)
 paths = np.repeat([points], chromosome_num, axis=0)
 
-# population = np.repeat([np.arange(gene_num)], chromosome_num, axis=0)
-# list(map(np.random.shuffle, population))
-
 # Parameters
 inertia_weight = 0.7298
-const_vp = 1.49618
-const_vg = 1.49618
+const_vp = 1.5
+const_vg = 1.5
 early_stop_fitness = 1.0
 
 i = 0
 iter_num = 100
-
-
-def update(pos, vel, pb, gb):
-    rand1 = np.random.rand()
-    rand2 = np.random.rand()
-
-    vel[:] = (inertia_weight * vel) + \
-             (rand1 * const_vp * (pb - pos)) + \
-             (rand2 * const_vg * (gb - pos))
-    pos[:] = pos + vel
-
 
 while True:
 
@@ -86,11 +72,16 @@ while True:
     else:
         plt.title("iteration %s, best_fitness: %.4f" % (i, gbest_fitness))
     plt.draw()
-    plt.pause(0.5)
+    plt.pause(0.3)
     ax.clear()
 
     # PSO Algorithm
-    update(p_arr, v_arr, pbest_arr, gbest)
+    rand1 = np.random.rand(chromosome_num, gene_num)
+    rand2 = np.random.rand(chromosome_num, gene_num)
+    v_arr[:] = (inertia_weight * v_arr) + \
+               (rand1 * const_vp * (pbest_arr - p_arr)) + \
+               (rand2 * const_vg * (gbest - p_arr))
+    p_arr[:] = p_arr + v_arr
 
     i += 1
 plt.show()
